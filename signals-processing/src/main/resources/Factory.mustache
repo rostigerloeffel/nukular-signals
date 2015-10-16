@@ -1,0 +1,19 @@
+package {{packageName}};
+
+import com.nukulargames.signals.SignallerFactory;
+import com.nukulargames.signals.SignallerWrapper;
+
+import {{packageName}}.{{name}};
+
+public class {{name}}Factory implements SignallerFactory<{{name}}> {
+	public {{name}}Factory() {
+	}
+	
+	public SignallerWrapper<{{name}}> createWrapper() {
+		return new {{name}}Wrapper();
+	}
+	
+	public Class<{{name}}> handles() {
+		return {{name}}.class;
+	}
+}

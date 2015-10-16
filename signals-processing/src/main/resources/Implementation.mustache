@@ -1,0 +1,28 @@
+package {{packageName}};
+
+import {{packageName}}.{{name}};
+import com.nukulargames.signals.Delegates.*;
+import com.nukulargames.signals.Signaller;
+
+public class {{name}}Signals extends {{name}} {
+	private boolean prepend;
+	private Signaller<{{name}}> signaller;
+	private Object delegate;
+
+	public <D> {{name}}Signals(Signaller<{{name}}> signaller, D delegate, boolean prepend) {
+		this.prepend = prepend;
+		this.signaller = signaller;
+		this.delegate = delegate;
+	}
+
+	{{#signals}}
+	{{signature}} {
+		if (prepend) {
+			signaller.prependDelegate({{name}}Wrapper.{{enumName}}, ({{delegateType}}) delegate);
+		} else {
+			signaller.appendDelegate({{name}}Wrapper.{{enumName}}, ({{delegateType}}) delegate);
+		}
+		return {{defaultValue}};
+	}	
+	{{/signals}}
+}

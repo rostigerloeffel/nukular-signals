@@ -1,0 +1,74 @@
+package {{packageName}};
+
+import com.nukulargames.signals.DelegateStore;
+import com.nukulargames.signals.Delegates.*;
+import com.nukulargames.signals.Signaller;
+import com.nukulargames.signals.SignallerWrapper;
+import {{packageName}}.{{name}};
+
+public class {{name}}Wrapper extends {{name}} implements SignallerWrapper<{{name}}>, Signaller<{{name}}> {
+	{{#signals}}
+	public final static int {{enumName}} = {{index}}; 
+	{{/signals}}
+
+	private {{name}} wrappee;
+
+	{{#signals}}
+	private DelegateStore<{{delegateType}}> {{signalName}}Delegates = new DelegateStore<>();
+	{{/signals}}
+
+	public {{name}}Wrapper() {
+	}
+
+	@Override
+	public {{name}} wrap({{name}} wrappee) {
+		this.wrappee = wrappee;
+		return this;
+	}
+
+	@Override
+	public <T extends Delegate> void prependDelegate(int signal, T delegate) {
+		switch (signal) {
+		{{#signals}}
+		case {{enumName}}:
+			{{signalName}}Delegates.prependedDelegates.add(({{delegateType}}) delegate);
+			return;
+		{{/signals}}
+		}
+	}
+	
+	@Override
+	public <T extends Delegate> void appendDelegate(int signal, T delegate) {
+		switch (signal) {
+		{{#signals}}
+		case {{enumName}}:
+			{{signalName}}Delegates.appendedDelegates.add(({{delegateType}}) delegate);
+			return;
+		{{/signals}}
+		}
+	}
+
+	{{#signals}}
+	@Override
+	{{signature}} {
+		for (Object delegate : {{signalName}}Delegates.prependedDelegates) {
+			(({{delegateType}}) delegate).call({{argLine}});
+		}
+		{{wrappeeCall}};
+		for (Object delegate : {{signalName}}Delegates.appendedDelegates) {
+			(({{delegateType}}) delegate).call({{argLine}});
+		}
+		return{{returnValue}};
+	}
+	
+	{{/signals}}
+	@Override
+	public <D> {{name}} appendSignals(D delegate) {
+		return new {{name}}Signals(this, delegate, false);
+	}
+	
+	@Override
+	public <D> {{name}} prependSignals(D delegate) {
+		return new {{name}}Signals(this, delegate, true);
+	}
+}
